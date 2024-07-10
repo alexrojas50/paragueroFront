@@ -95,7 +95,7 @@ const Register = async () => {
       userName: userName.value,
       password: password.value,
       phone: phone.value,
-      ci: ci.value,
+      CIUser: ci.value,
     });
 
     api.defaults.headers.common["Authorization"] = res.data.token;
