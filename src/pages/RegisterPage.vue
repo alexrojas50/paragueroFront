@@ -28,6 +28,15 @@
           id="phone"
           v-model="phone"
         />
+
+        <label for="username">Cédula</label>
+        <input
+          type="text"
+          placeholder="Ingresa un número de cédula"
+          id="CI"
+          v-model="ci"
+        />
+
         <label for="password">Password</label>
         <input
           type="password"
@@ -63,6 +72,7 @@ defineOptions({
 const userEmail = ref("");
 const userName = ref("");
 const phone = ref("");
+const ci = ref("");
 const password = ref("");
 const loading = ref(false);
 
@@ -73,8 +83,8 @@ onMounted(() => {
   // currentPath.value.changePath("register");
 });
 
-const toHome = () => router.push({name:"Index"});
-const toLogin = () => router.push({name:"Login"});
+const toHome = () => router.push({ name: "Index" });
+const toLogin = () => router.push({ name: "Login" });
 
 const Register = async () => {
   try {
@@ -84,7 +94,8 @@ const Register = async () => {
       userEmail: userEmail.value,
       userName: userName.value,
       password: password.value,
-      phone: phone.value
+      phone: phone.value,
+      ci: ci.value,
     });
 
     api.defaults.headers.common["Authorization"] = res.data.token;
@@ -122,7 +133,7 @@ const Register = async () => {
   min-height: 100%;
   height: 100vh;
   width: 100vw;
-  padding-top: 50px;
+  padding-top: 0px;
 }
 
 *,

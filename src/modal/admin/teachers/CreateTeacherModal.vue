@@ -2,54 +2,49 @@
   <q-dialog v-model="card">
     <q-card class="my-card">
       <q-card-section class="q-pt-md">
-        <div class="col text-h6 ellipsis">Crea un Curso</div>
+        <div class="col text-h6 ellipsis">Crea un Profesor</div>
       </q-card-section>
 
       <q-card-section class="q-pt-md">
         <q-input
-          v-model="courseName"
-          ref="courseNameRef"
+          v-model="teacherName"
+          ref="NameRef"
           class=""
           filled
-          label="Nombre del Curso"
-          :rules="rules.name"
+          label="Nombre del Profesor"
         ></q-input>
-        <!-- <q-input
-          v-model="courseTeacher"
-          ref="courseTeacherRef"
-          class="q-mt-md"
-          filled
-          label="Maestro"
-          :rules="rules.teacher"
-        ></q-input> -->
 
-        <q-select
-          color="teal"
-          filled
-          v-model="courseTeacher"
-          :options="teachers"
-          label="Curso"
-        >
-          <template v-slot:prepend>
-            <q-icon name="book" />
-          </template>
-        </q-select>
         <q-input
-          v-model="courseHour"
-          ref="courseHourRef"
+          v-model="teacherEmail"
+          ref="EmailRef"
           class="q-mt-md"
           filled
-          label="Horas"
-          mask="###"
-          :rules="rules.hour"
+          label="Email"
         ></q-input>
+
         <q-input
-          v-model="courseDescription"
-          ref="courseDescriptionRef"
+          v-model="teacherPhone"
+          ref="PhoneRef"
           class="q-mt-md"
           filled
-          label="Descripción"
-          :rules="rules.description"
+          label="Teléfono"
+        ></q-input>
+
+        <q-input
+          v-model="teacherCI"
+          ref="CIRef"
+          class="q-mt-md"
+          filled
+          label="Cédula de Identidad"
+        ></q-input>
+
+        <q-input
+          v-model="teacherPassword"
+          ref="PasswordRef"
+          class="q-mt-md"
+          filled
+          label="Contraseña"
+          type="password"
         ></q-input>
       </q-card-section>
 
@@ -67,14 +62,26 @@
           color="primary"
           label="Crear Curso"
           @click="createCourse"
-          :disable="!courseTeacher || !courseName || !courseHour || !courseDescription"
+          :disable="
+            !teacherName ||
+            !teacherEmail ||
+            !teacherPhone ||
+            !teacherPassword ||
+            !teacherCI
+          "
         >
           <q-tooltip
             class="bg-red text-h6"
             anchor="center left"
             self="center right"
             :offset="[10, 10]"
-            v-if="!courseTeacher || !courseName || !courseHour || !courseDescription"
+            v-if="
+              !teacherName ||
+              !teacherEmail ||
+              !teacherPhone ||
+              !teacherPassword ||
+              !teacherCI
+            "
             >Rellena todos los campos
           </q-tooltip>
         </q-btn>
@@ -98,59 +105,31 @@ defineOptions({
 });
 
 const card = ref(props.open);
-const courseName = ref("");
-const courseTeacher = ref("");
-const courseHour = ref("");
-const courseDescription = ref("");
-
-const courseNameRef = ref(null);
-const courseTeacherRef = ref(null);
-const courseHourRef = ref(null);
-const courseDescriptionRef = ref(null);
 const loading = ref(false);
+const teacherName = ref("");
+const teacherEmail = ref("");
+const teacherPhone = ref("");
+const teacherCI = ref("");
+const teacherPassword = ref("");
 
-const teachers = ref([]);
+const NameRef = ref(null);
+const EmailRef = ref(null);
+const PhoneRef = ref(null);
+const CIRef = ref(null);
+const PasswordRef = ref(false);
 
-const rules = {
-  name: [
-    (val) => val.length < 61 || "60 Carácteres máximos en el nombre",
-    (val) => val.length > 0 || "Coloca un nombre",
-  ],
-  teacher: [
-    (val) => val.length < 61 || "60 Carácteres máximos en el maestro",
-    (val) => val.length > 0 || "Coloca un maestro",
-  ],
-  hour: [
-    (val) => val.toString().length < 4 || "3 Carácteres máximos en la hora",
-    (val) => val.toString().length > 0 || "Coloca una hora",
-    (val) => !val.toString().includes("e") || "Ingresa un número válido",
-  ],
-  description: [
-    (val) => val.length < 61 || "60 Carácteres máximos en la descripción",
-    (val) => val.length > 0 || "Coloca una descripción",
-  ],
-};
+const rules = {};
 
 const createCourse = async () => {
   try {
     loading.value = true;
-
-    courseNameRef.value.validate();
-    courseHourRef.value.validate();
-    courseDescriptionRef.value.validate();
-
-    if (
-      courseNameRef.value.hasError ||
-      courseHourRef.value.hasError ||
-      courseDescriptionRef.value.hasError
-    )
-      throw { message: "Cumple con todas las condiciones antes de creare el curso" };
-
-    await api.post("/course", {
-      courseName: courseName.value,
-      courseTeacher: courseTeacher.value.id,
-      courseHours: courseHour.value,
-      courseDescription: courseDescription.value,
+    await api.post("/users/create", {
+      userName: teacherName.value,
+      password: teacherPassword.value,
+      userEmail: teacherEmail.value,
+      phone: teacherPhone.value,
+      CIUser: teacherCI.value,
+      level: 3,
     });
     Swal.fire({
       title: "Creado",
@@ -160,6 +139,8 @@ const createCourse = async () => {
     });
     props.loadCourse();
   } catch (error) {
+    loading.value = false;
+    card.value = false;
     console.log("ERROR ", error);
     Swal.fire({
       title: "Error",
@@ -173,10 +154,8 @@ const createCourse = async () => {
   }
 };
 
-onMounted(async () => {
-  await api.get("/users?isForCourse=true&level=3").then((res) => {
-    teachers.value = res.data;
-  });
+onMounted(() => {
+  console.log("PROPS ", props);
 });
 
 watch(card, () => {

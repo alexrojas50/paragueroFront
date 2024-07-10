@@ -6,11 +6,24 @@
       </div>
       <div class="dataBox">
         <div class="tableCourses">
-          <div class="q-pa-md">
-            <q-table flat bordered title="Cursos" :rows="rows" :columns="columns" row-key="name" binary-state-sort
-              class="tableCourse" rows-per-page-label="Documentos por página" dark>
+          <div class="q-pa-md elements">
+            <q-table
+              flat
+              bordered
+              title="Cursos"
+              :rows="rows"
+              :columns="columns"
+              row-key="name"
+              binary-state-sort
+              class="tableCourse"
+              rows-per-page-label="Documentos por página"
+              dark
+            >
               <template v-slot:top>
-                <img style="height: 50px; width: 50px" src="https://cdn.quasar.dev/logo-v2/svg/logo.svg" />
+                <img
+                  style="height: 50px; width: 50px"
+                  src="https://cdn.quasar.dev/logo-v2/svg/logo.svg"
+                />
                 <q-space />
                 <q-btn rounded outline @click="toInscribe"> Inscríbete </q-btn>
               </template>
@@ -21,7 +34,7 @@
                     {{ props.row.name }}
                   </q-td>
                   <q-td key="teacher" :props="props">
-                    {{ props.row.teacher }}
+                    {{ props.row.teacher.name }}
                   </q-td>
                   <q-td key="hours" :props="props">
                     <div class="text-pre-wrap">{{ props.row.hours }}</div>
@@ -29,6 +42,12 @@
                 </q-tr>
               </template>
             </q-table>
+            <q-btn
+              color="secondary"
+              label="Últimos Encuentros"
+              class="btn q-mt-xl"
+              @click="sendTo({ name: 'ClientMeets' })"
+            />
           </div>
         </div>
         <div class="infoBox">
@@ -49,9 +68,21 @@
           </div>
           <div class="social">
             <div class="socialB">
-              <q-btn color="secondary" :icon-right="'img:public/icons/instagram.svg'" label="Instagram" class="btn" />
-              <q-btn color="secondary" :icon-right="'img:public/icons/facebook.svg'" label="Facebook" class="btn" />
-              <q-btn color="secondary" :icon-right="'img:public/icons/whatsapp.svg'" label="Whatsapp" class="btn" />
+              <q-btn
+                color="secondary"
+                :icon-right="'img:public/icons/instagram.svg'"
+                label="Instagram"
+                class="btn"
+                @click="sendInstagram"
+              />
+
+              <q-btn
+                color="secondary"
+                :icon-right="'img:public/icons/whatsapp.svg'"
+                label="Whatsapp"
+                class="btn"
+                @click="sendWhatsapp"
+              />
             </div>
           </div>
         </div>
@@ -63,7 +94,7 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted } from "vue";
-import { api } from "../../boot/axios.js"
+import { api } from "../../boot/axios.js";
 
 const router = useRouter();
 const route = useRoute();
@@ -72,7 +103,15 @@ defineOptions({
   name: "ClientPage",
 });
 
-const rows = ref([])
+const rows = ref([]);
+
+const sendTo = (routeTo) => router.push(routeTo);
+
+const sendInstagram = () =>
+  window.open("https://www.instagram.com/acelparaguero/?hl=es", "_blank");
+
+const sendWhatsapp = () =>
+  window.open("https://api.whatsapp.com/send?phone=584121788031", "_blank");
 
 const columns = [
   {
@@ -101,10 +140,9 @@ const columns = [
 ];
 
 onMounted(async () => {
-  const res = await api.get('/course')
-  rows.value = res.data
-})
-
+  const res = await api.get("/course");
+  rows.value = res.data;
+});
 
 const toInscribe = () => router.push({ name: "ClientInscribe" });
 </script>
@@ -164,6 +202,12 @@ p {
   width: 30vw;
   height: 100%;
   /* background: red; */
+}
+
+.elements {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
 .tableCourse {

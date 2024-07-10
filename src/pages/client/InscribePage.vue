@@ -33,7 +33,7 @@
                     {{ props.row.name }}
                   </q-td>
                   <q-td key="teacher" :props="props">
-                    {{ props.row.teacher }}
+                    {{ props.row.teacher.name }}
                   </q-td>
                   <q-td key="description" :props="props">
                     {{ props.row.description }}

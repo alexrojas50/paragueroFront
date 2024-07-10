@@ -10,7 +10,7 @@
             <q-table
               flat
               bordered
-              title="Próximos Encuentros"
+              title="Últimos Encuentros"
               :rows="rows"
               :columns="columns"
               row-key="name"
@@ -19,51 +19,117 @@
               rows-per-page-label="Documentos por página"
               dark
             >
+              <template v-slot:top>
+                <p>Últimos Encuentros</p>
+                <q-space />
+                <!-- <q-btn rounded @click="openModalCreate" color="green" icon="add"></q-btn> -->
+                <p>Crea un reporte pulsando el botón "+"</p>
+              </template>
+
               <template v-slot:body="props">
                 <q-tr :props="props">
                   <q-td key="name" :props="props">
-                    {{ props.row.courseData.name }}
+                    {{ props.row.course.name }}
                   </q-td>
                   <q-td key="teacher" :props="props">
-                    {{ props.row.courseData.teacher }}
+                    {{ props.row.course.teacher.name }}
                   </q-td>
-                  <q-td key="hours" :props="props">
-                    <div class="text-pre-wrap">{{ props.row.date }}</div>
+                  <q-td key="date" :props="props">
+                    <div class="text-pre-wrap">
+                      {{ `${props.row.date} ${props.row.time}` }}
+                    </div>
                   </q-td>
-                  <q-td key="hours" :props="props">
-                    <div class="text-pre-wrap">{{ props.row.time }}</div>
+                  <q-td key="actions" :props="props">
+                    <div class="q-gutter-sm row justify-center">
+                      <q-btn
+                        rounded
+                        @click="openModalEdit(props.row)"
+                        color="green"
+                        icon="add"
+                      />
+
+                      <q-btn
+                        rounded
+                        @click="openModalDelete(props.row)"
+                        color="blue"
+                        icon="info"
+                      />
+                    </div>
                   </q-td>
                 </q-tr>
               </template>
             </q-table>
           </div>
         </div>
-        <div>
-          <div class="q-pa-md buttons">
-            <q-btn rounded @click="toCourses">Cursos</q-btn>
-            <q-btn rounded @click="toRooms">Aulas</q-btn>
-            <q-btn rounded @click="toUsers">Usuarios</q-btn>
-          </div>
-        </div>
       </div>
+      <create-modal
+        :open="modalCreate"
+        :changeModal="openModalCreate"
+        v-if="modalCreate"
+        :loadCourse="loadCourse"
+      />
+
+      <edit-modal
+        :meet="courseSelect"
+        :open="modalEdit"
+        :changeModal="openModalEdit"
+        v-if="modalEdit"
+        :loadCourse="loadCourse"
+      />
     </div>
   </q-page>
 </template>
 
 <script setup>
-import { api } from "src/boot/axios";
-import Swal from "sweetalert2";
-import { onMounted, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
+import EditCourseModal from "../../modal/client/report/EditReportModal.vue";
+import Swal from "sweetalert2";
+import { ref, onMounted } from "vue";
+import { api } from "src/boot/axios";
 
 const router = useRouter();
 const route = useRoute();
 
 defineOptions({
-  name: "AdminPage",
+  name: "AdminCourses",
+  components: {
+    "edit-modal": EditCourseModal,
+  },
 });
 
+const modalCreate = ref(false);
+const modalEdit = ref(false);
+const modalDelete = ref(false);
+const courseSelect = ref({});
 const rows = ref([]);
+
+const openModalCreate = () => {
+  modalCreate.value = !modalCreate.value;
+};
+const openModalEdit = (courseS) => {
+  courseSelect.value = courseS;
+  modalEdit.value = !modalEdit.value;
+};
+const openModalDelete = (courseS) => {
+  courseSelect.value = courseS;
+  modalDelete.value = !modalDelete.value;
+};
+
+const loadCourse = async () => {
+  try {
+    const res = await api.get("/meet");
+    rows.value = res.data;
+  } catch (error) {
+    console.log("error", error);
+    Swal.fire({
+      title: "Error",
+      text: error.message && !error.response ? error.message : error.response.data.error,
+      icon: "error",
+      confirmButtonText: "Aceptar",
+    });
+  }
+};
+
 const columns = [
   {
     name: "name",
@@ -84,36 +150,22 @@ const columns = [
   {
     name: "date",
     label: "Fecha",
+    align: "center",
     field: "date",
-    sortable: true,
     style: "width: 10px",
   },
   {
-    name: "hours",
-    label: "Hora",
-    field: "hours",
-    sortable: true,
-    style: "width: 10px",
+    name: "actions",
+    label: "Acciones",
+    align: "center",
+    content: "center",
+    field: "actions",
   },
 ];
 
-onMounted(async () => {
-  try {
-    const res = await api.get("/meet?getLasts=true");
-    rows.value = res.data;
-  } catch (error) {
-    Swal.fire({
-      title: "Error",
-      text: "Error al cargar los cursos",
-      icon: "error",
-      confirmButtonText: "Aceptar",
-    });
-  }
+onMounted(() => {
+  loadCourse();
 });
-
-const toCourses = () => router.push({ name: "AdminCourses" });
-const toRooms = () => router.push({ name: "AdminRooms" });
-const toUsers = () => router.push({ name: "AdminUsers" });
 </script>
 
 <style scoped>
@@ -122,7 +174,7 @@ const toUsers = () => router.push({ name: "AdminUsers" });
 }
 
 .mainPage {
-  background: rgb(18, 42, 107);
+  background: rgb(91, 123, 212);
   position: absolute;
   top: 0;
   left: 0;
@@ -168,7 +220,7 @@ p {
 }
 
 .tableCourses {
-  width: 30vw;
+  width: 80vw;
   height: 100%;
   /* background: red; */
 }
@@ -183,6 +235,10 @@ p {
   backdrop-filter: blur(10px);
   border: 2px solid rgba(131, 99, 99, 0.349);
   box-shadow: 0 0 20px rgba(8, 7, 16, 0.24);
+}
+
+.tableCourse p {
+  width: auto;
 }
 
 .buttons {

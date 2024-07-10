@@ -12,9 +12,7 @@
             Instagram
           </q-btn>
 
-          <q-btn outline rounded class="buttonsH" @click="sendInstagram">
-            Whatsapp
-          </q-btn>
+          <q-btn outline rounded class="buttonsH" @click="sendWhatsapp"> Whatsapp </q-btn>
 
           <q-btn
             outline
@@ -90,6 +88,9 @@ const changeRoute = async () => {
 
 const sendInstagram = () =>
   window.open("https://www.instagram.com/acelparaguero/?hl=es", "_blank");
+
+const sendWhatsapp = () =>
+  window.open("https://api.whatsapp.com/send?phone=584121788031", "_blank");
 
 const returnIndex = () => router.push({ name: "Index" });
 </script>

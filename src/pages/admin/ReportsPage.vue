@@ -19,65 +19,112 @@
               rows-per-page-label="Documentos por página"
               dark
             >
+              <template v-slot:top>
+                <p>Reportes</p>
+                <q-space />
+              </template>
+
               <template v-slot:body="props">
                 <q-tr :props="props">
-                  <q-td key="name" :props="props">
-                    {{ props.row.courseData.name }}
+                  <q-td key="course" :props="props">
+                    {{ props.row.meet.course.name }}
                   </q-td>
-                  <q-td key="teacher" :props="props">
-                    {{ props.row.courseData.teacher }}
+                  <q-td key="course" :props="props">
+                    {{ props.row.meet.course.teacher.name }}
                   </q-td>
-                  <q-td key="hours" :props="props">
-                    <div class="text-pre-wrap">{{ props.row.date }}</div>
+                  <q-td key="date" :props="props">
+                    {{ new Date(props.row.meet.fullDate).toLocaleDateString() }}
                   </q-td>
-                  <q-td key="hours" :props="props">
-                    <div class="text-pre-wrap">{{ props.row.time }}</div>
+                  <q-td key="hour" :props="props">
+                    {{ new Date(props.row.meet.fullDate).toLocaleTimeString() }}
+                  </q-td>
+
+                  <q-td key="actions" :props="props">
+                    <div class="q-gutter-sm row justify-center">
+                      <q-btn
+                        rounded
+                        @click="openModalEdit(props.row)"
+                        color="blue"
+                        icon="info"
+                      />
+                    </div>
                   </q-td>
                 </q-tr>
               </template>
             </q-table>
           </div>
         </div>
-        <div>
-          <div class="q-pa-md buttons">
-            <q-btn rounded @click="toCourses">Cursos</q-btn>
-            <q-btn rounded @click="toRooms">Aulas</q-btn>
-            <q-btn rounded @click="toUsers">Usuarios</q-btn>
-          </div>
-        </div>
       </div>
+      <edit-modal
+        :reports="userSelect"
+        :open="modalEdit"
+        :changeModal="openModalEdit"
+        :loadCourse="loadCourse"
+        v-if="modalEdit"
+      />
     </div>
   </q-page>
 </template>
 
 <script setup>
+import EditUserModal from "../../modal/admin/reports/EditUserModal.vue";
+import { ref, onMounted } from "vue";
 import { api } from "src/boot/axios";
-import Swal from "sweetalert2";
-import { onMounted, ref } from "vue";
-import { useRoute, useRouter } from "vue-router";
-
-const router = useRouter();
-const route = useRoute();
 
 defineOptions({
-  name: "AdminPage",
+  name: "AdminCourses",
+  components: {
+    "edit-modal": EditUserModal,
+  },
 });
 
+const modalEdit = ref(false);
+const modalDelete = ref(false);
+const userSelect = ref({});
 const rows = ref([]);
+
+const openModalEdit = (userS) => {
+  userSelect.value = userS;
+  modalEdit.value = !modalEdit.value;
+};
+const openModalDelete = (userS) => {
+  userSelect.value = userS;
+  modalDelete.value = !modalDelete.value;
+};
+
+const loadCourse = async () => {
+  try {
+    const res = await api.get("/report");
+    rows.value = res.data;
+  } catch (error) {
+    console.log("error", error);
+    Swal.fire({
+      title: "Error",
+      text: error.message && !error.response ? error.message : error.response.data.error,
+      icon: "error",
+      confirmButtonText: "Aceptar",
+    });
+  }
+};
+
+onMounted(() => {
+  loadCourse();
+});
+
 const columns = [
   {
-    name: "name",
+    name: "course",
     required: true,
-    label: "Nombre del Curso",
+    label: "Curso",
     align: "left",
-    field: (row) => row.name,
-    format: (val) => `${val}`,
+    field: "course",
     sortable: true,
   },
   {
     name: "teacher",
-    align: "center",
-    label: "Dictado Por",
+    required: true,
+    label: "Profesor",
+    align: "left",
     field: "teacher",
     sortable: true,
   },
@@ -85,35 +132,24 @@ const columns = [
     name: "date",
     label: "Fecha",
     field: "date",
+    align: "center",
     sortable: true,
-    style: "width: 10px",
   },
   {
-    name: "hours",
+    name: "hour",
     label: "Hora",
-    field: "hours",
+    field: "hour",
+    align: "center",
     sortable: true,
-    style: "width: 10px",
+  },
+  {
+    name: "actions",
+    label: "Acciones",
+    align: "center",
+    content: "center",
+    field: "actions",
   },
 ];
-
-onMounted(async () => {
-  try {
-    const res = await api.get("/meet?getLasts=true");
-    rows.value = res.data;
-  } catch (error) {
-    Swal.fire({
-      title: "Error",
-      text: "Error al cargar los cursos",
-      icon: "error",
-      confirmButtonText: "Aceptar",
-    });
-  }
-});
-
-const toCourses = () => router.push({ name: "AdminCourses" });
-const toRooms = () => router.push({ name: "AdminRooms" });
-const toUsers = () => router.push({ name: "AdminUsers" });
 </script>
 
 <style scoped>
@@ -122,7 +158,7 @@ const toUsers = () => router.push({ name: "AdminUsers" });
 }
 
 .mainPage {
-  background: rgb(18, 42, 107);
+  background: rgb(91, 123, 212);
   position: absolute;
   top: 0;
   left: 0;
@@ -168,7 +204,7 @@ p {
 }
 
 .tableCourses {
-  width: 30vw;
+  width: 80vw;
   height: 100%;
   /* background: red; */
 }
@@ -183,6 +219,10 @@ p {
   backdrop-filter: blur(10px);
   border: 2px solid rgba(131, 99, 99, 0.349);
   box-shadow: 0 0 20px rgba(8, 7, 16, 0.24);
+}
+
+.tableCourse p {
+  width: auto;
 }
 
 .buttons {

@@ -18,7 +18,17 @@ const routes = [
     name: 'Client',
     children: [
       { path: '', component: () => import('src/pages/client/ClientPage.vue'), name: 'Client' },
-      { path: 'inscribe', component: () => import('pages/client/InscribePage.vue'), name: 'ClientInscribe' }
+      { path: 'inscribe', component: () => import('pages/client/InscribePage.vue'), name: 'ClientInscribe' },
+      { path: 'meets', component: () => import('pages/client/LastMeetsPage.vue'), name: 'ClientMeets' }
+    ],
+  },
+
+  {
+    path: '/teacher',
+    component: () => import('layouts/MainLayout.vue'),
+    name: 'Teacher',
+    children: [
+      { path: '', component: () => import('src/pages/teacher/TeacherPage.vue'), name: 'Teacher' },
     ],
   },
 
@@ -31,7 +41,9 @@ const routes = [
       { path: 'courses', component: () => import('src/pages/admin/CoursesPage.vue'), name: 'AdminCourses' },
       { path: 'rooms', component: () => import('src/pages/admin/RoomsPage.vue'), name: 'AdminRooms' },
       { path: 'users', component: () => import('src/pages/admin/UsersPage.vue'), name: 'AdminUsers' },
-      { path: 'meets', component: () => import('src/pages/admin/MeetsPage.vue'), name: 'AdminMeets' }
+      { path: 'teachers', component: () => import('src/pages/admin/TeacherPage.vue'), name: 'AdminTeachers' },
+      { path: 'meets', component: () => import('src/pages/admin/MeetsPage.vue'), name: 'AdminMeets' },
+      { path: 'reports', component: () => import('src/pages/admin/ReportsPage.vue'), name: 'AdminReports' }
     ],
     beforeEnter: (to, from, next) => authUser.value.verifyAdminRoute(next)
   },

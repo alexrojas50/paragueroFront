@@ -20,21 +20,20 @@
               dark
             >
               <template v-slot:top>
-                <p>Cursos</p>
+                <p>Profesores</p>
                 <q-space />
                 <q-btn rounded @click="openModalCreate" color="green" icon="add"></q-btn>
               </template>
-
               <template v-slot:body="props">
                 <q-tr :props="props">
                   <q-td key="name" :props="props">
                     {{ props.row.name }}
                   </q-td>
-                  <q-td key="teacher" :props="props">
-                    {{ props.row.teacher.name }}
+                  <q-td key="email" :props="props">
+                    {{ props.row.email }}
                   </q-td>
-                  <q-td key="hours" :props="props">
-                    <div class="text-pre-wrap">{{ props.row.hours }}</div>
+                  <q-td key="phone" :props="props">
+                    {{ props.row.phone }}
                   </q-td>
                   <q-td key="actions" :props="props">
                     <div class="q-gutter-sm row justify-center">
@@ -44,7 +43,6 @@
                         color="blue"
                         icon="edit"
                       />
-
                       <q-btn
                         rounded
                         @click="openModalDelete(props.row)"
@@ -87,9 +85,9 @@
 
 <script setup>
 import { useRoute, useRouter } from "vue-router";
-import CreateCourseModal from "../../modal/admin/courses/CreateCourseModal.vue";
-import EditCourseModal from "../../modal/admin/courses/EditCourseModal.vue";
-import DeleteCourseModal from "../../modal/admin/courses/DeleteCourseModal.vue";
+import CreateTeacherModal from "../../modal/admin/teachers/CreateTeacherModal.vue";
+import EditTeacherModal from "../../modal/admin/teachers/EditTeacherModal.vue";
+import DeleteTeacherModal from "../../modal/admin/teachers/DeleteTeacherModal.vue";
 import Swal from "sweetalert2";
 import { ref, onMounted } from "vue";
 import { api } from "src/boot/axios";
@@ -100,9 +98,9 @@ const route = useRoute();
 defineOptions({
   name: "AdminCourses",
   components: {
-    "create-modal": CreateCourseModal,
-    "edit-modal": EditCourseModal,
-    "delete-modal": DeleteCourseModal,
+    "create-modal": CreateTeacherModal,
+    "edit-modal": EditTeacherModal,
+    "delete-modal": DeleteTeacherModal,
   },
 });
 
@@ -126,8 +124,7 @@ const openModalDelete = (courseS) => {
 
 const loadCourse = async () => {
   try {
-    const res = await api.get("/course");
-    console.log("RESS ", res, res.data);
+    const res = await api.get("/users?level=3");
     rows.value = res.data;
   } catch (error) {
     console.log("error", error);
@@ -144,25 +141,23 @@ const columns = [
   {
     name: "name",
     required: true,
-    label: "Nombre del Curso",
+    label: "Nombre",
     align: "left",
     field: (row) => row.name,
     format: (val) => `${val}`,
     sortable: true,
   },
   {
-    name: "teacher",
+    name: "email",
     align: "center",
-    label: "Dictado Por",
-    field: "teacher",
-    sortable: true,
+    label: "Email",
+    field: "email",
   },
   {
-    name: "hours",
-    label: "Horas",
-    field: "hours",
-    sortable: true,
-    style: "width: 10px",
+    name: "phone",
+    align: "center",
+    label: "Teléfono",
+    field: "phone",
   },
   {
     name: "actions",
@@ -170,6 +165,7 @@ const columns = [
     align: "center",
     content: "center",
     field: "actions",
+    classes: "test",
   },
 ];
 

@@ -84,11 +84,24 @@
             :active="activeItem == 'teachers'"
             clickable
             v-ripple
+            @click="sendTo({ name: 'AdminTeachers' })"
           >
             <q-item-section avatar>
               <q-icon name="book" />
             </q-item-section>
             <q-item-section> Profesores </q-item-section>
+          </q-item>
+
+          <q-item
+            :active="activeItem == 'reports'"
+            clickable
+            v-ripple
+            @click="sendTo({ name: 'AdminReports' })"
+          >
+            <q-item-section avatar>
+              <q-icon name="report" />
+            </q-item-section>
+            <q-item-section> Reportes </q-item-section>
           </q-item>
           <q-separator />
 
