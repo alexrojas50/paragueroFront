@@ -2,33 +2,67 @@
   <q-dialog v-model="card">
     <q-card class="my-card">
       <q-card-section class="q-pt-md">
-        <div class="col text-h6 ellipsis">Edita un Curso</div>
+        <div class="col text-h6 ellipsis">Edita un Profesor</div>
       </q-card-section>
 
       <q-card-section class="q-pt-md">
-        <q-input v-model="courseName" ref="courseNameRef" class="" filled label="Nombre del Curso"
-          :rules="rules.name"></q-input>
-        <q-input v-model="courseTeacher" ref="courseTeacherRef" class="q-mt-md" filled label="Maestro"
-          :rules="rules.teacher"></q-input>
-        <q-input v-model="courseHour" ref="courseHourRef" class="q-mt-md" filled label="Horas" mask="###"
-          :rules="rules.hour"></q-input>
-        <q-input v-model="courseDescription" ref="courseDescriptionRef" class="q-mt-md" filled label="Descripción"
-          :rules="rules.description"></q-input>
+        <q-input
+          v-model="userName"
+          ref="userNameRef"
+          class=""
+          filled
+          label="Nombre Y Apellido"
+          :rules="rules.name"
+        ></q-input>
+        <q-input
+          v-model="userEmail"
+          ref="userEmailRef"
+          class="q-mt-md"
+          filled
+          label="Email"
+          :rules="rules.email"
+        ></q-input>
+        <q-input
+          v-model="userPhone"
+          ref="userPhoneRef"
+          class="q-mt-md"
+          filled
+          label="Teléfono"
+          :rules="rules.phone"
+        ></q-input>
+        <q-input
+          v-model="userPassword"
+          ref="userPasswordRef"
+          class="q-mt-md"
+          filled
+          label="Contraseña"
+          :rules="rules.password"
+        ></q-input>
       </q-card-section>
 
       <q-separator />
-      <div class=" loaderContainer" v-if="loading">
+      <div class="loaderContainer" v-if="loading">
         <span class="loader"></span>
       </div>
 
       <q-separator />
 
       <q-card-actions align="right">
-        <q-btn type="submit" flat color="primary" label="Editar Curso" @click="editCourse"
-          :disable="!courseTeacher || !courseName || !courseHour || !courseDescription">
-          <q-tooltip class="bg-red text-h6" anchor="center left" self="center right" :offset="[10, 10]"
-            v-if="!courseTeacher || !courseName || !courseHour || !courseDescription">Rellena todos los
-            campos
+        <q-btn
+          type="submit"
+          flat
+          color="primary"
+          label="Editar Profesor"
+          @click="editUser"
+          :disable="!userName || !userEmail || !userPhone"
+        >
+          <q-tooltip
+            class="bg-red text-h6"
+            anchor="center left"
+            self="center right"
+            :offset="[10, 10]"
+            v-if="!userName || !userEmail || !userPhone"
+            >Rellena todos los campos
           </q-tooltip>
         </q-btn>
       </q-card-actions>
@@ -39,10 +73,10 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, watch } from "vue";
-import { api } from "../../../boot/axios.js"
+import { api } from "../../../boot/axios.js";
 import Swal from "sweetalert2";
 
-const props = defineProps(["course", "open", "changeModal", "loadCourse"]);
+const props = defineProps(["user", "open", "changeModal", "loadCourse"]);
 
 const router = useRouter();
 const route = useRoute();
@@ -53,64 +87,74 @@ defineOptions({
 
 const card = ref(props.open);
 
-const courseName = ref(props.course.name);
-const courseTeacher = ref(props.course.teacher);
-const courseHour = ref(props.course.hours);
-const courseDescription = ref(props.course.description);
-const courseId = ref(props.course._id);
+const userName = ref(props.user.name);
+const userEmail = ref(props.user.email);
+const userPhone = ref(props.user.phone);
+const userPassword = ref("");
+const userId = ref(props.user._id);
 const loading = ref(false);
 
-const courseNameRef = ref(null);
-const courseTeacherRef = ref(null);
-const courseHourRef = ref(null);
-const courseDescriptionRef = ref(null);
+const userNameRef = ref(null);
+const userEmailRef = ref(null);
+const userPhoneRef = ref(null);
+const userPasswordRef = ref(null);
 
 const rules = {
   name: [
-    val => (val.length < 61) || '60 Carácteres máximos en el nombre',
-    val => (val.length > 0) || 'Coloca un nombre'
+    (val) => val.length < 61 || "60 Carácteres máximos en el nombre",
+    (val) => val.length > 0 || "Coloca un nombre",
   ],
-  teacher: [
-    val => (val.length < 61) || '60 Carácteres máximos en el maestro',
-    val => (val.length > 0) || 'Coloca un maestro'
+  email: [
+    (val) => val.length < 61 || "60 Carácteres máximos en el maestro",
+    (val) => val.length > 0 || "Coloca un maestro",
   ],
-  hour: [
-    val => (val.toString().length < 4) || '3 Carácteres máximos en la hora',
-    val => (val.toString().length > 0) || 'Coloca una hora',
-    val => (!val.toString().includes('e')) || 'Ingresa un número válido'
+  password: [],
+  phone: [
+    (val) => val.toString().length < 11 || "11 Carácteres máximos en la hora",
+    (val) => val.toString().length > 0 || "Coloca una hora",
+    (val) => !val.toString().includes("e") || "Ingresa un número válido",
   ],
-  description: [
-    val => (val.length < 61) || '60 Carácteres máximos en la descripción',
-    val => (val.length > 0) || 'Coloca una descripción'
-  ],
-}
+};
 
-const editCourse = async () => {
-
+const editUser = async () => {
   try {
     loading.value = true;
 
-    courseNameRef.value.validate()
-    courseTeacherRef.value.validate()
-    courseHourRef.value.validate()
-    courseDescriptionRef.value.validate()
+    userNameRef.value.validate();
+    userEmailRef.value.validate();
+    userPhoneRef.value.validate();
+    userPasswordRef.value.validate();
 
-    if (courseNameRef.value.hasError || courseTeacherRef.value.hasError || courseHourRef.value.hasError || courseDescriptionRef.value.hasError) throw { message: 'Cumple con todas las condiciones antes de creare el curso' }
+    if (
+      userNameRef.value.hasError ||
+      userEmailRef.value.hasError ||
+      userPhoneRef.value.hasError ||
+      userPasswordRef.value.hasError
+    )
+      throw { message: "Cumple con todas las condiciones antes de editar el usuario" };
 
-    await api.put('/course', { courseName: courseName.value, courseTeacher: courseTeacher.value, courseHours: courseHour.value, courseDescription: courseDescription.value, courseId: courseId.value })
+    await api.put("/users", {
+      userName: userName.value,
+      userEmail: userEmail.value,
+      userPhone: userPhone.value,
+      userPassword: userPassword.value,
+      userId: userId.value,
+    });
     Swal.fire({
       title: "Editado",
-      text: 'Curso editado correctamente',
+      text: "Profesor editado correctamente",
       icon: "success",
       confirmButtonText: "Aceptar",
     });
-    props.loadCourse()
-
+    props.loadCourse();
   } catch (error) {
-    console.log('ERROR ', error);
+    console.log("ERROR ", error);
     Swal.fire({
       title: "Error",
-      text: error.message && !error.response ? error.message : error.response.data.error,
+      text:
+        error.message && !error.response
+          ? error.message
+          : error.response.data.error || error.message,
       icon: "error",
       confirmButtonText: "Aceptar",
     });
@@ -120,16 +164,8 @@ const editCourse = async () => {
   }
 };
 
-onMounted(() => {
-  console.log('PROPS ', props);
-});
-
 watch(card, () => {
   props.changeModal();
-});
-
-watch(loading, () => {
-  console.log("CHANGE LOADING ", loading);
 });
 </script>
 
@@ -191,5 +227,6 @@ watch(loading, () => {
   }
 }
 
-.inputCreate {}
+.inputCreate {
+}
 </style>

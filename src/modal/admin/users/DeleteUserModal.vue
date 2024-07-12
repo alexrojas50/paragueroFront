@@ -21,7 +21,7 @@
 
       <q-card-actions align="right" class="row justify-around">
         <q-btn color="primary" label="Regresar" @click="close(false)" />
-        <q-btn color="red" label="Eliminar Curso" @click="close(true)" />
+        <q-btn color="red" label="Eliminar Usuario" @click="close(true)" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -30,7 +30,7 @@
 <script setup>
 import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, watch } from "vue";
-import { api } from "../../../boot/axios.js"
+import { api } from "../../../boot/axios.js";
 import Swal from "sweetalert2";
 const props = defineProps(["user", "open", "changeModal", "loadCourse"]);
 
@@ -49,24 +49,26 @@ const close = async (decision) => {
   try {
     if (decision) {
       loading.value = true;
-      await api.delete(`/users?userId=${userId.value}`)
+      await api.delete(`/users?userId=${userId.value}`);
       Swal.fire({
         title: "Eliminado",
-        text: 'Usuario elminado correctamente',
+        text: "Usuario elminado correctamente",
         icon: "success",
         confirmButtonText: "Aceptar",
       });
-      props.loadCourse()
-
+      props.loadCourse();
     } else {
       loading.value = false;
       card.value = false;
     }
   } catch (error) {
-    console.log('ERROR ', error);
+    console.log("ERROR ", error);
     Swal.fire({
       title: "Error",
-      text: error.message && !error.response ? error.message : error.response.data.error || error.message,
+      text:
+        error.message && !error.response
+          ? error.message
+          : error.response.data.error || error.message,
       icon: "error",
       confirmButtonText: "Aceptar",
     });
@@ -147,5 +149,6 @@ watch(loading, () => {
   }
 }
 
-.inputCreate {}
+.inputCreate {
+}
 </style>

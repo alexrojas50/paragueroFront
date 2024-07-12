@@ -14,7 +14,9 @@
 
       <q-card-section class="q-pt-md">
         <div class="text-subtitle1"><b>Curso :</b> {{ meetSelect.course.name }}</div>
-        <div class="text-subtitle1"><b>Profesor :</b> {{ meetSelect.course.teacher }}</div>
+        <div class="text-subtitle1">
+          <b>Profesor :</b> {{ meetSelect.course.teacher.name }}
+        </div>
         <div class="text-subtitle1"><b>Fecha :</b> {{ meetSelect.date }}</div>
         <div class="text-subtitle1"><b>Hora :</b> {{ meetSelect.time }}</div>
       </q-card-section>
@@ -109,9 +111,9 @@ watch(meetSelect, () => {
 });
 
 onMounted(async () => {
-  const res = await api.get(`/meet?meetId=${meetSelect.value._id}`)
-  console.log('RESSS ', res);
-  rows.value= res.data.users
+  const res = await api.get(`/meet?meetId=${meetSelect.value._id}`);
+  console.log("RESSS ", res);
+  rows.value = res.data.users;
 });
 
 const columns = [

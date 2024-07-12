@@ -2,7 +2,12 @@
   <q-page class="flex flex-center mainPage">
     <div class="box">
       <h1 class="title">Construyendo Futuros En El Oriente Venezolano</h1>
-      <p>“Juntos cambiamos vidas para construir futuros”</p>
+      <p class="text1">
+        ¿Estás listo para dar un gran paso hacia el logro de tus metas? No esperes más
+        para invertir en tu crecimiento personal y profesional. Nuestros cursos están
+        diseñados para inspirarte, desafiarte y brindarte las herramientas que necesitas
+        para alcanzar el éxito
+      </p>
       <div class="svgIm">
         <img src="/group.svg" alt="SVG" class="svgLanding" />
         <div class="dots"></div>
@@ -69,7 +74,7 @@ const toRegister = () => router.push({ name: "Register" });
 .svgIm {
   position: absolute;
   bottom: -50px;
-  right: 10px;
+  right: -50px;
   width: 50vw;
   height: 36vw;
   min-width: 500px;
@@ -144,5 +149,9 @@ p {
   color: #12525e;
   font-weight: bold;
   transition: 0.5s;
+}
+
+.text1 {
+  font-size: 35px;
 }
 </style>

@@ -3,7 +3,7 @@
     <q-card class="my-card">
       <q-card-section>
         <div class="row no-wrap items-center">
-          <div class="col text-h6 ellipsis">Crea un Encuentro</div>
+          <div class="col text-h6 ellipsis">Edita un Encuentro</div>
         </div>
       </q-card-section>
 
@@ -19,7 +19,7 @@
           color="teal"
           filled
           v-model="courseS"
-          :options="futureMeetings"
+          :options="avalibleCourse"
           label="Label"
         >
           <template v-slot:prepend>
@@ -35,7 +35,7 @@
           color="teal"
           filled
           v-model="roomS"
-          :options="futureMeetings"
+          :options="avalibleRooms"
           label="Label"
         >
           <template v-slot:prepend>
@@ -47,14 +47,7 @@
       <q-card-section class="q-pt-md">
         <div class="text-subtitle1">Selecciona una Fecha</div>
         <!-- <div class="text-subtitle1">Teacher : {{ course.teacher }}</div> -->
-        <q-input
-          color="teal"
-          filled
-          v-model="dateS"
-          :options="futureMeetings"
-          label="Label"
-          type="date"
-        >
+        <q-input color="teal" filled v-model="dateS" label="Label" type="date">
           <template v-slot:prepend>
             <q-icon name="event" />
           </template>
@@ -64,14 +57,7 @@
       <q-card-section class="q-pt-md q-mb-md">
         <div class="text-subtitle1">Selecciona una Hora</div>
         <!-- <div class="text-subtitle1">Teacher : {{ course.teacher }}</div> -->
-        <q-input
-          color="teal"
-          filled
-          v-model="timeS"
-          :options="futureMeetings"
-          label="Label"
-          type="time"
-        >
+        <q-input color="teal" filled v-model="timeS" label="Label" type="time">
           <template v-slot:prepend>
             <q-icon name="schedule" />
           </template>
@@ -82,7 +68,7 @@
 
       <q-card-actions align="right" class="row justify-around q-pb-md">
         <q-btn color="primary" label="Regresar" @click="close(false)" />
-        <q-btn color="green" label="Cambiar Estado" @click="close(true)" />
+        <q-btn color="green" label="Editar" @click="close(true)" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -93,11 +79,29 @@ import { useRoute, useRouter } from "vue-router";
 import { ref, onMounted, watch } from "vue";
 import Swal from "sweetalert2";
 import moment from "moment";
+import { api } from "src/boot/axios";
 
-const props = defineProps(["meet", "open", "changeModal"]);
+const props = defineProps(["meet", "open", "changeModal", "loadMeets"]);
 
 const router = useRouter();
 const route = useRoute();
+
+const hora = props.meet.time;
+const [hora12, minutos, segundos, momentDay] = hora.split(/[:\s]/);
+const esPM = momentDay === "P.";
+let hora24 = parseInt(hora12, 10);
+
+if (esPM && hora24 !== 12) {
+  hora24 += 12;
+} else if (!esPM && hora24 === 12) {
+  hora24 = 0;
+}
+
+const horaFormateada = `${hora24.toString().padStart(2, "0")}:${minutos}:${segundos}`;
+const courseValue = {
+  label: `${props.meet.course.name} - ${props.meet.course.teacher.name} `,
+  id: props.meet.course._id,
+};
 
 defineOptions({
   name: "DeleteCourse",
@@ -105,34 +109,70 @@ defineOptions({
 
 const card = ref(props.open);
 const loading = ref(false);
-const courseS = ref(props.meet.course);
-const roomS = ref(props.meet.room);
-const dateS = ref(props.meet.date);
-const timeS = ref(props.meet.time);
 
-const close = (decision) => {
+const courseS = ref(courseValue);
+const roomS = ref({ label: props.meet.room.number, id: props.meet.room._id });
+const dateS = ref(
+  props.meet.date
+    .split("/")
+    .reverse()
+    .map((e) => {
+      if (e.length == 1) return `${0}${e}`;
+      else return e;
+    })
+    .join("-")
+);
+const timeS = ref(horaFormateada);
+
+const avalibleCourse = ref([]);
+const avalibleRooms = ref([]);
+
+const close = async (decision) => {
   if (decision) {
-    loading.value = true;
-    setTimeout(() => {
+    try {
+      loading.value = true;
+      await api.put("/meet", {
+        meetId: props.meet._id,
+        courseId: courseS.value.id,
+        roomId: roomS.value.id,
+        dateMeet: dateS.value,
+        hourMeet: timeS.value,
+      });
+      props.loadMeets();
       loading.value = false;
       card.value = false;
       Swal.fire({
-        title: "Elimnado",
-        text: "Curso Elimnado Correctamente",
+        title: "Editado",
+        text: "Encuentro Editado Correctamente",
         icon: "success",
         confirmButtonText: "Aceptar",
         timer: 3000,
         timerProgressBar: true,
       });
-    }, 5000);
+    } catch (error) {
+      loading.value = false;
+      card.value = false;
+      Swal.fire({
+        title: "Error",
+        text: "Error Editando el Encuentro",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    }
   } else {
     loading.value = false;
     card.value = false;
   }
 };
 
-onMounted(() => {
-  console.log("PROPS ", props);
+onMounted(async () => {
+  await api.get("/course?isForMeets=true").then((res) => {
+    avalibleCourse.value = res.data;
+  });
+
+  await api.get("/room?isForMeets=true").then((res) => {
+    avalibleRooms.value = res.data;
+  });
 });
 
 watch(card, () => {

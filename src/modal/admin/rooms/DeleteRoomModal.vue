@@ -20,7 +20,7 @@
 
       <q-card-actions align="right" class="row justify-around">
         <q-btn color="primary" label="Regresar" @click="close(false)" />
-        <q-btn color="red" label="Eliminar Curso" @click="close(true)" />
+        <q-btn color="red" label="Eliminar Aula" @click="close(true)" />
       </q-card-actions>
     </q-card>
   </q-dialog>

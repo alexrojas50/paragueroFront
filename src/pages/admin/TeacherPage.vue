@@ -65,7 +65,7 @@
       />
 
       <edit-modal
-        :course="courseSelect"
+        :user="courseSelect"
         :open="modalEdit"
         :changeModal="openModalEdit"
         v-if="modalEdit"
@@ -73,7 +73,7 @@
       />
 
       <delete-modal
-        :course="courseSelect"
+        :user="courseSelect"
         :open="modalDelete"
         :changeModal="openModalDelete"
         v-if="modalDelete"

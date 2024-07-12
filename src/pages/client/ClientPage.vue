@@ -54,16 +54,18 @@
           <img src="/paraguero.png" alt="" />
           <div class="info">
             <p>
-              ¿Estás listo para dar un gran paso hacia el logro de tus metas? No esperes
-              más para invertir en tu crecimiento personal y profesional. Nuestros cursos
-              están diseñados para inspirarte, desafiarte y brindarte las herramientas que
-              necesitas para alcanzar el éxito.
+              La Asosiacion Civil El Paraguero que inicia en el año 1984, con el nombre de
+              Centro de Formación Regional. Esta gran asociación pertenece al grupo social
+              CESAP el cual es una red de organizaciones de la Acción Popular en
+              Venezuela, la cual promueve la construcción de una sociedad impulsando la
+              participación de sectores populares como autores y autoras de la
+              transformación social.
             </p>
 
             <p>
               ¡Inscríbete ahora y comienza tu viaje hacia el desarrollo y la realización
               personal! El futuro que deseas está a solo un paso de distancia. ¡No te
-              pierdas esta oportunidad!
+              pierdas esta oportunidad!
             </p>
           </div>
           <div class="social">

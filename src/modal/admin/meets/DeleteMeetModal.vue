@@ -7,8 +7,8 @@
 
       <q-card-section class="q-pt-md">
         <div class="text-h7">
-          ¿Seguro que quieres eliminar el encuentro de {{ meet.course }} el día
-          {{ meet.date }} a las {{ meet.hour }}?
+          ¿Seguro que quieres eliminar el encuentro de {{ meet.course.name }} el día
+          {{ meet.date }} a las {{ meet.time }}?
         </div>
       </q-card-section>
 
@@ -21,7 +21,7 @@
 
       <q-card-actions align="right" class="row justify-around">
         <q-btn color="primary" label="Regresar" @click="close(false)" />
-        <q-btn color="red" label="Eliminar Curso" @click="close(true)" />
+        <q-btn color="red" label="Eliminar Encuentro" @click="close(true)" />
       </q-card-actions>
     </q-card>
   </q-dialog>
@@ -30,7 +30,8 @@
 <script setup>
 import { ref, onMounted, watch } from "vue";
 import Swal from "sweetalert2";
-const props = defineProps(["meet", "open", "changeModal"]);
+import { api } from "src/boot/axios";
+const props = defineProps(["meet", "open", "changeModal", "loadMeets"]);
 
 defineOptions({
   name: "DeleteCourse",
@@ -40,21 +41,32 @@ const card = ref(props.open);
 const loading = ref(false);
 const meet = ref(props.meet);
 
-const close = (decision) => {
+const close = async (decision) => {
   if (decision) {
-    loading.value = true;
-    setTimeout(() => {
+    try {
+      loading.value = true;
+      await api.delete(`/meet?meetId=${props.meet._id}`);
+      props.loadMeets();
       loading.value = false;
       card.value = false;
       Swal.fire({
-        title: "Elimnado",
+        title: "Eliminado",
         text: "Encuentro Eliminado Correctamente",
         icon: "success",
         confirmButtonText: "Aceptar",
         timer: 3000,
         timerProgressBar: true,
       });
-    }, 5000);
+    } catch (error) {
+      loading.value = false;
+      card.value = false;
+      Swal.fire({
+        title: "Error",
+        text: "Error Editando el Encuentro",
+        icon: "error",
+        confirmButtonText: "Aceptar",
+      });
+    }
   } else {
     loading.value = false;
     card.value = false;
