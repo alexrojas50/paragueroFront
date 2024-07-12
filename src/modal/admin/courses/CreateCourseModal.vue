@@ -23,7 +23,7 @@
           :rules="rules.teacher"
         ></q-input> -->
 
-        <q-select
+        <q-input
           color="teal"
           filled
           v-model="courseTeacher"
@@ -33,7 +33,7 @@
           <template v-slot:prepend>
             <q-icon name="book" />
           </template>
-        </q-select>
+        </q-input>
         <q-input
           v-model="courseHour"
           ref="courseHourRef"
