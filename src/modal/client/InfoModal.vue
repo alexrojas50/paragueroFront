@@ -9,7 +9,7 @@
 
       <q-card-section class="q-pt-none">
         <div class="text-subtitle1">Horas : {{ course.hours }}</div>
-        <div class="text-subtitle1">Profesor : {{ course.teacher }}</div>
+        <div class="text-subtitle1">Profesor : {{ course.teacher.NAME }}</div>
         <div class="text-subtitle1">Descripción : {{ course.description }}</div>
       </q-card-section>
 
