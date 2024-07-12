@@ -14,26 +14,15 @@
           label="Nombre del Curso"
           :rules="rules.name"
         ></q-input>
-        <!-- <q-input
-          v-model="courseTeacher"
-          ref="courseTeacherRef"
-          class="q-mt-md"
-          filled
-          label="Maestro"
-          :rules="rules.teacher"
-        ></q-input> -->
 
-        <q-input
+        <q-select
           color="teal"
           filled
           v-model="courseTeacher"
           :options="teachers"
-          label="Curso"
+          label="Profesor"
         >
-          <template v-slot:prepend>
-            <q-icon name="book" />
-          </template>
-        </q-input>
+        </q-select>
         <q-input
           v-model="courseHour"
           ref="courseHourRef"

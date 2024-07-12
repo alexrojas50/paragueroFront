@@ -24,9 +24,6 @@
                   <q-td key="name" :props="props">
                     {{ props.row.courseData.name }}
                   </q-td>
-                  <q-td key="teacher" :props="props">
-                    {{ props.row.courseData.teacher }}
-                  </q-td>
                   <q-td key="hours" :props="props">
                     <div class="text-pre-wrap">{{ props.row.date }}</div>
                   </q-td>
@@ -75,17 +72,11 @@ const columns = [
     sortable: true,
   },
   {
-    name: "teacher",
-    align: "center",
-    label: "Dictado Por",
-    field: "teacher",
-    sortable: true,
-  },
-  {
     name: "date",
     label: "Fecha",
     field: "date",
     sortable: true,
+    align: "left",
     style: "width: 10px",
   },
   {
