@@ -3,7 +3,7 @@
     <q-card class="my-card">
       <q-card-section>
         <div class="row no-wrap items-center">
-          <div class="col text-h6 ellipsis">Información del Encuentro</div>
+          <div class="col text-h6 ellipsis">Información del EncuentrAo</div>
         </div>
       </q-card-section>
 
@@ -25,6 +25,7 @@
 
       <q-card-section class="q-pt-md">
         <q-table
+          id="tablePrint2"
           flat
           bordered
           title="Encuentros"
@@ -64,6 +65,7 @@
             </q-tr>
           </template>
         </q-table>
+        <q-btn color="blue" label="Descargar PDF" @click="descargarPDF" class="q-mt-md" />
       </q-card-section>
       <q-separator />
 
@@ -71,6 +73,35 @@
         <q-btn color="red" label="Cerrar" @click="close" />
       </q-card-actions>
     </q-card>
+    <div style="visibility: hidden; position: absolute; overflow: hidden">
+      <!-- <print-modal></print-modal> -->
+      <div id="tablePrint">
+        <div class="text-subtitle1"><b>Curso :</b> {{ meetSelect.course.name }}</div>
+        <div class="text-subtitle1">
+          <b>Profesor :</b> {{ meetSelect.course.teacher.name }}
+        </div>
+        <div class="text-subtitle1"><b>Fecha :</b> {{ meetSelect.date }}</div>
+        <div class="text-subtitle1"><b>Hora :</b> {{ meetSelect.time }}</div>
+        <table>
+          <thead>
+            <tr>
+              <th>Nombre</th>
+              <th>Teléfono</th>
+              <th>Correo</th>
+              <!-- Agrega más columnas según tus necesidades -->
+            </tr>
+          </thead>
+          <tbody>
+            <tr v-for="(item, index) in rows" :key="index">
+              <td>{{ item.name }}</td>
+              <td>{{ item.phone }}</td>
+              <td>{{ item.email }}</td>
+              <!-- Agrega más celdas según tus necesidades -->
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
   </q-dialog>
 </template>
 
@@ -80,6 +111,7 @@ import { ref, onMounted, watch } from "vue";
 import Swal from "sweetalert2";
 import moment from "moment";
 import { api } from "src/boot/axios";
+import html2pdf from "html2pdf.js";
 
 const props = defineProps(["meet", "open", "changeModal"]);
 
@@ -90,6 +122,7 @@ const route = useRoute();
 
 defineOptions({
   name: "InfoMeetModal",
+  components: {},
 });
 
 const card = ref(props.open);
@@ -115,6 +148,25 @@ onMounted(async () => {
   console.log("RESSS ", res);
   rows.value = res.data.users;
 });
+
+const datos = [
+  { valor1: "Dato 1AAAAAAAAAAAAAAAAAAAAAA", valor2: "Dato A" },
+  { valor1: "Dato 2", valor2: "Dato B" },
+  // Agrega más datos según tus necesidades
+];
+
+const descargarPDF = () => {
+  const printContents = document.getElementById("tablePrint");
+  var opt = {
+    margin: 1,
+    filename: "Course.pdf",
+    html2canvas: { scale: 2 },
+    jsPDF: { unit: "in", format: "letter", orientation: "portrait" },
+  };
+
+  // New Promise-based usage:
+  html2pdf().from(printContents).set(opt).save();
+};
 
 const columns = [
   {
@@ -207,5 +259,9 @@ const columns = [
 .deteleBtn {
   height: 30px;
   min-height: 0px;
+}
+
+.tdTable {
+  margin-right: 500px;
 }
 </style>

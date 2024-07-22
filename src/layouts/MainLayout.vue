@@ -8,6 +8,8 @@
           </q-toolbar-title>
         </div>
         <div class="butttonsHeader">
+          <q-btn outline rounded class="buttonsH" @click="getManual"> Manual </q-btn>
+
           <q-btn outline rounded class="buttonsH" @click="sendInstagram">
             Instagram
           </q-btn>
@@ -91,6 +93,8 @@ const sendInstagram = () =>
 
 const sendWhatsapp = () =>
   window.open("https://api.whatsapp.com/send?phone=584121788031", "_blank");
+
+const getManual = () => (window.location.href = "Manual.pdf");
 
 const returnIndex = () => router.push({ name: "Index" });
 </script>
