@@ -76,6 +76,7 @@
     <div style="visibility: hidden; position: absolute; overflow: hidden">
       <!-- <print-modal></print-modal> -->
       <div id="tablePrint">
+        <div class="text-subtitle1">PARAGUERO</div>
         <div class="text-subtitle1"><b>Curso :</b> {{ meetSelect.course.name }}</div>
         <div class="text-subtitle1">
           <b>Profesor :</b> {{ meetSelect.course.teacher.name }}
